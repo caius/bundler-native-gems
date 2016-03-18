@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+begin
+require "tty"
+rescue LoadError
+  puts "Install the `tty` gem please"
+  exit 1
+end
+
+require "bundler/setup"
+
+native_specs = Bundler.definition.dependencies.map(&:to_spec).reject {|spec| spec.extensions.empty? }
+
+table = TTY::Table.new(
+  header: ["Gem Name", "Version"],
+  rows: native_specs.map {|spec| [spec.name, spec.version] }
+)
+
+puts table.render(:ascii, padding: [0, 1, 0, 1])
