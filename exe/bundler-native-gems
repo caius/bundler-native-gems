@@ -13,7 +13,7 @@ native_specs = Bundler.definition.resolve.to_a.select { |spec| spec.__materializ
 
 table = TTY::Table.new(
   header: ["Gem Name", "Version"],
-  rows: native_specs.map {|spec| [spec.name, spec.version] }
+  rows: native_specs.sort_by(&:name).map {|spec| [spec.name, spec.version] }
 )
 
 puts table.render(:ascii, padding: [0, 1, 0, 1])
