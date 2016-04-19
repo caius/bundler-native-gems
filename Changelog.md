@@ -1,5 +1,7 @@
 # Changelog
 
+# v0.2.0 - 2016-04-19
+
 * Bugfix - lists all native gems, not just direct dependencies
 * Add changelog
 
