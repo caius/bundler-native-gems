@@ -9,7 +9,7 @@ end
 
 require "bundler/setup"
 
-native_specs = Bundler.definition.dependencies.map(&:to_spec).reject {|spec| spec.extensions.empty? }
+native_specs = Bundler.definition.resolve.to_a.select { |spec| spec.__materialize__.extensions.any? }
 
 table = TTY::Table.new(
   header: ["Gem Name", "Version"],
