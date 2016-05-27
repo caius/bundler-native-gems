@@ -1,5 +1,17 @@
 #!/usr/bin/env ruby
 
+if ARGV.include?("--help") || ARGV.include?("-h")
+  $stderr.puts <<-HELP
+USAGE: bundler native-gems [OPTIONS]
+
+OPTIONS:
+  --with group1 [group2, etc] - include gems from these bundler groups
+  --with group1 [group2, etc] - exclude gems from these bundler groups
+  --help - You're looking at it
+  HELP
+  exit 0
+end
+
 require "bundler/cli"
 require "terminal-table"
 
@@ -44,21 +56,8 @@ class CLI < Bundler::CLI
   desc "native_gems [OPTIONS]", "Lists the gems with native extensions"
   method_option "without", :type => :array, :banner => "Exclude gems that are part of the specified named group."
   method_option "with", :type => :array, :banner => "Include gems that are part of the specified named group."
-  method_option "help", :banner => "Print this help"
   def native_gems
-    if options[:help]
-      $stderr.puts <<-HELP
-USAGE: bundler native-gems [OPTIONS]
-
-OPTIONS:
-  --with group1 [group2, etc] - include gems from these bundler groups
-  --with group1 [group2, etc] - exclude gems from these bundler groups
-  --help - You're looking at it
-
-      HELP
-    else
-      NativeGems.new(options).run
-    end
+    NativeGems.new(options).run
   end
 end
 
