@@ -41,11 +41,22 @@ class NativeGems
 end
 
 class CLI < Bundler::CLI
+  def initialize(*)
+    super
+    # Replace `help` with Thor's version, not Bundler::CLI's
+    self.class.superclass.superclass.instance_method(:help).bind(self)
+  end
+
   desc "native_gems [OPTIONS]", "Lists the gems with native extensions"
   method_option "without", :type => :array, :banner => "Exclude gems that are part of the specified named group."
   method_option "with", :type => :array, :banner => "Include gems that are part of the specified named group."
+  method_option "help", :banner => "Print this help"
   def native_gems
-    NativeGems.new(options).run
+    if options[:help]
+      help("native_gems")
+    else
+      NativeGems.new(options).run
+    end
   end
 end
 
