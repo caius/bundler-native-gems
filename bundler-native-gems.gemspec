@@ -18,5 +18,5 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "bundler", "~> 1.11"
-  spec.add_dependency "tty", "~> 0.4.0"
+  spec.add_dependency "terminal-table", "~> 1.5"
 end

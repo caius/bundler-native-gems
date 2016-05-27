@@ -1,19 +1,43 @@
 #!/usr/bin/env ruby
 
-begin
-require "tty"
-rescue LoadError
-  puts "Install the `tty` gem please"
-  exit 1
+require "bundler/cli"
+require "terminal-table"
+
+class NativeGems
+  def initialize(_options)
+  end
+
+  def run
+    groups = definition.groups
+    resolved_specs = definition.specs_for(groups).to_a
+    native_specs = resolved_specs.select { |spec| spec.extensions.any? }
+
+    output = if $stdout.tty?
+      rows = [["Name", "Version"]]
+      output = Terminal::Table.new do |t|
+        t << ["Name", "Version"]
+        t << :separator
+        native_specs.each do |spec|
+          t << [spec.name, spec.version]
+        end
+      end
+    else
+      native_specs.map { |spec| "#{spec.name}\t#{spec.version}" }
+    end
+
+    $stdout.puts output
+  end
+
+  def definition
+    Bundler.definition
+  end
 end
 
-require "bundler/setup"
+class CLI < Bundler::CLI
+  desc "native_gems [OPTIONS]", "Lists the gems with native extensions"
+  def native_gems
+    NativeGems.new(options).run
+  end
+end
 
-native_specs = Bundler.definition.resolve.to_a.select { |spec| spec.__materialize__.extensions.any? }
-
-table = TTY::Table.new(
-  header: ["Gem Name", "Version"],
-  rows: native_specs.sort_by(&:name).map {|spec| [spec.name, spec.version] }
-)
-
-puts table.render(:ascii, padding: [0, 1, 0, 1])
+CLI.start(ARGV.dup.unshift("native_gems"), :debug => true)
