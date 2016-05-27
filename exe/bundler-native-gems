@@ -4,11 +4,16 @@ require "bundler/cli"
 require "terminal-table"
 
 class NativeGems
-  def initialize(_options)
+
+  attr_reader :with, :without
+
+  def initialize(options)
+    @with = Array(options["with"]).map(&:to_sym)
+    @without = Array(options["without"]).map(&:to_sym)
   end
 
   def run
-    groups = definition.groups
+    groups = definition.groups - without + with
     resolved_specs = definition.specs_for(groups).to_a
     native_specs = resolved_specs.select { |spec| spec.extensions.any? }
 
@@ -28,6 +33,8 @@ class NativeGems
     $stdout.puts output
   end
 
+  private
+
   def definition
     Bundler.definition
   end
@@ -35,6 +42,8 @@ end
 
 class CLI < Bundler::CLI
   desc "native_gems [OPTIONS]", "Lists the gems with native extensions"
+  method_option "without", :type => :array, :banner => "Exclude gems that are part of the specified named group."
+  method_option "with", :type => :array, :banner => "Include gems that are part of the specified named group."
   def native_gems
     NativeGems.new(options).run
   end
