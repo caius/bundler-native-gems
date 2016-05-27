@@ -1,19 +1,65 @@
 #!/usr/bin/env ruby
 
-begin
-require "tty"
-rescue LoadError
-  puts "Install the `tty` gem please"
-  exit 1
+require "bundler/cli"
+require "terminal-table"
+
+class NativeGems
+
+  attr_reader :with, :without
+
+  def initialize(options)
+    @with = Array(options["with"]).map(&:to_sym)
+    @without = Array(options["without"]).map(&:to_sym)
+  end
+
+  def run
+    groups = definition.groups - without + with
+    resolved_specs = definition.specs_for(groups).to_a
+    native_specs = resolved_specs.select { |spec| spec.extensions.any? }
+
+    output = if $stdout.tty?
+      rows = [["Name", "Version"]]
+      output = Terminal::Table.new do |t|
+        t << ["Name", "Version"]
+        t << :separator
+        native_specs.each do |spec|
+          t << [spec.name, spec.version]
+        end
+      end
+    else
+      native_specs.map { |spec| "#{spec.name}\t#{spec.version}" }
+    end
+
+    $stdout.puts output
+  end
+
+  private
+
+  def definition
+    Bundler.definition
+  end
 end
 
-require "bundler/setup"
+class CLI < Bundler::CLI
+  desc "native_gems [OPTIONS]", "Lists the gems with native extensions"
+  method_option "without", :type => :array, :banner => "Exclude gems that are part of the specified named group."
+  method_option "with", :type => :array, :banner => "Include gems that are part of the specified named group."
+  method_option "help", :banner => "Print this help"
+  def native_gems
+    if options[:help]
+      $stderr.puts <<-HELP
+USAGE: bundler native-gems [OPTIONS]
 
-native_specs = Bundler.definition.resolve.to_a.select { |spec| spec.__materialize__.extensions.any? }
+OPTIONS:
+  --with group1 [group2, etc] - include gems from these bundler groups
+  --with group1 [group2, etc] - exclude gems from these bundler groups
+  --help - You're looking at it
 
-table = TTY::Table.new(
-  header: ["Gem Name", "Version"],
-  rows: native_specs.sort_by(&:name).map {|spec| [spec.name, spec.version] }
-)
+      HELP
+    else
+      NativeGems.new(options).run
+    end
+  end
+end
 
-puts table.render(:ascii, padding: [0, 1, 0, 1])
+CLI.start(ARGV.dup.unshift("native_gems"), :debug => true)
