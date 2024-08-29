@@ -1,0 +1,5 @@
+source "https://rubygems.org/"
+
+gem "bundler-native-gems", path: ".."
+
+gem "net-pop"
