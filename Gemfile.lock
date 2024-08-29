@@ -1,0 +1,28 @@
+PATH
+  remote: .
+  specs:
+    bundler-native-gems (1.0.0)
+      bundler (>= 1.11, < 5)
+      terminal-table (~> 1.5)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    terminal-table (1.8.0)
+      unicode-display_width (~> 1.1, >= 1.1.1)
+    unicode-display_width (1.8.0)
+
+PLATFORMS
+  arm64-darwin-24
+  ruby
+
+DEPENDENCIES
+  bundler-native-gems!
+
+CHECKSUMS
+  bundler-native-gems (1.0.0)
+  terminal-table (1.8.0) sha256=13371f069af18e9baa4e44d404a4ada9301899ce0530c237ac1a96c19f652294
+  unicode-display_width (1.8.0) sha256=0292132d364d59fcdd83f144910c48b3c8332b28a14c5c04bb093dd165600488
+
+BUNDLED WITH
+  4.0.3
