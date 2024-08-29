@@ -1,19 +1,26 @@
 #!/usr/bin/env ruby
 
-begin
 require "tty"
-rescue LoadError
-  puts "Install the `tty` gem please"
-  exit 1
+require "samovar"
+
+class NativeGems < Samovar::Command
+  options do
+    option "-g/--group <group>"
+  end
+
+  def invoke(argv)
+    
+  end
 end
 
-require "bundler/setup"
-
-native_specs = Bundler.definition.resolve.to_a.select { |spec| spec.__materialize__.extensions.any? }
-
-table = TTY::Table.new(
-  header: ["Gem Name", "Version"],
-  rows: native_specs.sort_by(&:name).map {|spec| [spec.name, spec.version] }
-)
-
-puts table.render(:ascii, padding: [0, 1, 0, 1])
+NativeGems.new(ARGV).invoke
+# require "bundler/setup"
+#
+# native_specs = Bundler.definition.resolve.to_a.select { |spec| spec.__materialize__.extensions.any? }
+#
+# table = TTY::Table.new(
+#   header: ["Gem Name", "Version"],
+#   rows: native_specs.sort_by(&:name).map {|spec| [spec.name, spec.version] }
+# )
+#
+# puts table.render(:ascii, padding: [0, 1, 0, 1])
