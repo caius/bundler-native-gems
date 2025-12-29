@@ -1,0 +1,42 @@
+name: "Test Bundler Compatibility"
+
+on:
+  push:
+    branches:
+     - "main"
+  pull_request:
+
+jobs:
+  test-bundler-1:
+    name: "Test Bundler 1.x"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v4"
+      - uses: "ruby/setup-ruby@v1"
+        with:
+          ruby-version: "3.1.7"
+          bundler: "1.17.3"
+          bundler-cache: true
+      - run: "bundle exec rake spec"
+
+  test-bundler-2:
+    name: "Test Bundler 2.x"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v4"
+      - uses: "ruby/setup-ruby@v1"
+        with:
+          bundler: "2.7.2"
+          bundler-cache: true
+      - run: "bundle exec rake spec"
+
+  test-bundler-4:
+    name: "Test Bundler 4.x"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v4"
+      - uses: "ruby/setup-ruby@v1"
+        with:
+          bundler: "4.0"
+          bundler-cache: true
+      - run: "bundle exec rake spec"
