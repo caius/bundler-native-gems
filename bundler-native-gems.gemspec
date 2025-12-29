@@ -19,4 +19,8 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "bundler", ">= 1.11", "< 5"
   spec.add_dependency "terminal-table", "~> 1.5"
+
+  spec.add_development_dependency "rake"
+  spec.add_development_dependency "aruba"
+  spec.add_development_dependency "rspec"
 end
